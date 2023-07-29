@@ -1,19 +1,38 @@
+import os
+from typing import List, Dict
 from abc import ABC, abstractmethod
 import requests
-import os
+
 
 class AbstractJobSiteAPI(ABC):
+    """
+    Абстрактный базовый класс для API сайтов с вакансиями.
+    """
 
     @abstractmethod
-    def get_vacancies(self, **params):
+    def get_vacancies(self, keyword: str) -> List[Dict[str, str]]:
+        """
+        Получает список вакансий по заданному ключевому слову.
+
+        Параметры:
+            keyword (str): Ключевое слово для поиска вакансий.
+
+        Возвращает:
+            List[Dict[str, str]]: Список словарей с информацией о вакансиях. Каждый словарь
+            содержит данные о вакансии, например, название, компания, зарплата и т.д.
+        """
         pass
 
 
-
 class SuperjobAPI(AbstractJobSiteAPI):
+    """
+    Класс для работы с API сайта Superjob.
+    """
+
     SECRET_KEY = os.getenv('SJ_API_KEY')
 
-    def get_vacancies(self, keyword):
+    def get_vacancies(self, keyword: str) -> List[Dict[str, str]]:
+        """Получает список вакансий с сайта Superjob по заданному ключевому слову."""
         params = {
             "keyword": keyword,
             "count": 20,
@@ -35,13 +54,14 @@ class SuperjobAPI(AbstractJobSiteAPI):
 
 
 class HeadHunterAPI(AbstractJobSiteAPI):
-    BASE_URL = 'https://api.hh.ru/'
-    USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    """Класс для работы с API сайта HeadHunter."""
+    USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
 
-    def get_vacancies(self, keyword):
+    def get_vacancies(self, keyword: str) -> List[Dict[str, str]]:
+        """Получает список вакансий с сайта HeadHunter по заданному ключевому слову."""
         params = {
             "text": keyword,
-            "per_page": 20,  # Number of vacancies per page
+            "per_page": 20,
         }
 
         headers = {
@@ -57,4 +77,3 @@ class HeadHunterAPI(AbstractJobSiteAPI):
         else:
             print(f"Request failed with status code: {response.status_code}")
             return []
-
