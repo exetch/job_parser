@@ -35,7 +35,8 @@ class SuperjobAPI(AbstractJobSiteAPI):
         """Получает список вакансий с сайта Superjob по заданному ключевому слову."""
         params = {
             "keyword": keyword,
-            "count": 20,
+            "count": 10,
+            "no_agreement": 1
         }
 
         headers = {
@@ -61,7 +62,9 @@ class HeadHunterAPI(AbstractJobSiteAPI):
         """Получает список вакансий с сайта HeadHunter по заданному ключевому слову."""
         params = {
             "text": keyword,
-            "per_page": 20,
+            "area": 1,
+            "per_page": 10,
+            "only_with_salary": True
         }
 
         headers = {
