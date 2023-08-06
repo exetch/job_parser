@@ -1,5 +1,6 @@
 class Vacancy:
-    def __init__(self, vacancy_id, title, salary_from, salary_to, currency, vacancy_type, experience, requirements, responsibility, city, company_name,
+    def __init__(self, vacancy_id, title, salary_from, salary_to, currency, vacancy_type, experience, requirements,
+                 responsibility, city, company_name,
                  url):
         self.vacancy_id = int(vacancy_id)
         self.title = title
@@ -61,33 +62,37 @@ class Vacancy:
     def __eq__(self, other):
         return self.salary_from == other.salary_from and self.salary_to == other.salary_to
 
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
     def __lt__(self, other):
-        return self.salary_from < other.salary_from
+        if self.salary_from is None:
+            self_salary_from = 0
+        else:
+            self_salary_from = self.salary_from
+
+        if other.salary_from is None:
+            other_salary_from = 0
+        else:
+            other_salary_from = other.salary_from
+
+        if self_salary_from == other_salary_from:
+            if self.salary_to is None:
+                self_salary_to = 0
+            else:
+                self_salary_to = self.salary_to
+
+            if other.salary_to is None:
+                other_salary_to = 0
+            else:
+                other_salary_to = other.salary_to
+
+            return self_salary_to > other_salary_to
+        else:
+            return self_salary_from < other_salary_from
 
     def __le__(self, other):
-        return self.salary_from <= other.salary_from
+        return self.__lt__(other) or self.__eq__(other)
 
     def __gt__(self, other):
-        return self.salary_from > other.salary_from
+        return not self.__le__(other)
 
     def __ge__(self, other):
-        return self.salary_from >= other.salary_from
-
-    def to_dict(self):
-        return {
-            "vacancy_id": self.vacancy_id,
-            "title": self.title,
-            "salary_from": self.salary_from,
-            "salary_to": self.salary_to,
-            "currency": self.currency,
-            "vacancy_type": self.vacancy_type,
-            "experience": self.experience,
-            "requirements": self.requirements,
-            "responsibility": self.responsibility,
-            "city": self.city,
-            "company_name": self.company_name,
-            "url": self.url
-        }
+        return not self.__lt__(other)

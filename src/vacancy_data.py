@@ -1,11 +1,21 @@
+import json
 from src.job_api_clients import HeadHunterAPI, SuperjobAPI
-from src.vacancy import Vacancy
 
 
-def fetch_and_save_hh_vacancies(storage):
+def fetch_and_save_hh_vacancies(storage, keyword, cities_ids):
+    """
+    Получает вакансии с сайта hh.ru, фильтрует и сохраняет их в JSON-файл.
+
+    Параметры:
+        storage (JSONVacancyStorage): Объект хранилища для сохранения вакансий.
+
+    """
     api_hh = HeadHunterAPI()
-    vacancies_hh = api_hh.get_vacancies('python')
+    vacancies_hh = api_hh.get_vacancies(keyword, cities_ids)
+
     if vacancies_hh:
+        vacancies_list = []
+
         for vacancy in vacancies_hh:
             vacancy_id = vacancy.get("id")
             title = vacancy.get("name")
@@ -19,17 +29,41 @@ def fetch_and_save_hh_vacancies(storage):
             salary_to = vacancy.get("salary", {}).get("to")
             currency = vacancy.get("salary", {}).get("currency")
             company_name = vacancy.get("employer", {}).get("name")
-            vacancy_obj = Vacancy(vacancy_id, title, salary_from, salary_to, currency, vacancy_type, experience,
-                                  requirements, responsibility, city, company_name, url)
-            storage.add_vacancy(vacancy_obj)
+
+            vacancy_dict = {
+                "vacancy_id": vacancy_id,
+                "title": title,
+                "url": url,
+                "vacancy_type": vacancy_type,
+                "city": city,
+                "experience": experience,
+                "requirements": requirements,
+                "responsibility": responsibility,
+                "salary_from": salary_from,
+                "salary_to": salary_to,
+                "currency": currency,
+                "company_name": company_name
+            }
+
+            vacancies_list.append(vacancy_dict)
+
+        storage.add_vacancies(vacancies_list)
     else:
         print('No vacancies found.')
 
 
-def fetch_and_save_sj_vacancies(storage):
+def fetch_and_save_sj_vacancies(storage, keyword, cities_ids):
+    """
+       Получает вакансии с сайта superjob.ru, фильтрует и сохраняет их в JSON-файл.
+
+       Параметры:
+           storage (JSONVacancyStorage): Объект хранилища для сохранения вакансий.
+
+       """
     api_sj = SuperjobAPI()
-    vacancies_sj = api_sj.get_vacancies('python')
+    vacancies_sj = api_sj.get_vacancies(keyword, cities_ids)
     if vacancies_sj:
+        vacancies_list = []
         for vacancy in vacancies_sj:
             vacancy_id = vacancy.get("id")
             is_closed = vacancy.get("is_closed")
@@ -79,8 +113,58 @@ def fetch_and_save_sj_vacancies(storage):
             responsibilities_text = ". ".join(responsibilities[:3]) + "..." if responsibilities else "Не указаны"
             requirements_text = ". ".join(requirements[:3]) + "..." if requirements else "Не указаны"
 
-            vacancy_obj = Vacancy(vacancy_id, title, salary_from, salary_to, currency, vacancy_type, experience,
-                                  requirements_text, responsibilities_text, city, company_name, url)
-            storage.add_vacancy(vacancy_obj)
+            vacancy_dict = {
+                "vacancy_id": vacancy_id,
+                "title": title,
+                "url": url,
+                "vacancy_type": vacancy_type,
+                "city": city,
+                "experience": experience,
+                "requirements": requirements_text,
+                "responsibility": responsibilities_text,
+                "salary_from": salary_from,
+                "salary_to": salary_to,
+                "currency": currency,
+                "company_name": company_name
+            }
+
+            vacancies_list.append(vacancy_dict)
+
+        storage.add_vacancies(vacancies_list)
     else:
         print('No vacancies found.')
+
+def find_city_ids_hh(filename, city_names):
+    with open(filename, 'r', encoding='utf-8') as file:
+        data = json.load(file)
+
+    city_ids = []
+    normalized_city_names = [city.lower() for city in city_names]
+
+    for region in data:
+        for area in region['areas']:
+            if area['name'].lower() in normalized_city_names:
+                city_ids.append(int(area['id']))
+
+    # Обработка исключений
+    for city_name in normalized_city_names:
+        if city_name == 'москва':
+            city_ids.append(1)
+        elif city_name == 'санкт-петербург':
+            city_ids.append(2)
+
+    return sorted(city_ids)
+
+
+def find_city_ids_sj(filename, city_names):
+    with open(filename, 'r', encoding='utf-8') as file:
+        data = json.load(file)
+
+    city_ids = []
+    normalized_city_names = [city.lower() for city in city_names]
+
+    for city in data:
+        if city['title'].lower() in normalized_city_names:
+            city_ids.append(city['id'])
+
+    return sorted(city_ids)
