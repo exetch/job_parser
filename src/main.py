@@ -1,13 +1,17 @@
+import os
 from vacancystorage import JSONVacancyStorage
-from vacancy_data import fetch_and_save_hh_vacancies, fetch_and_save_sj_vacancies, find_city_ids_hh, find_city_ids_sj
 from userinterface import UserInterface
-
+from utils import find_city_ids_hh, find_city_ids_sj
+from job_api_clients import SuperjobAPI, HeadHunterAPI
 
 TOWNS_IDS_HH = "towns_hh.json"
 TOWNS_IDS_SJ = "towns_sj.json"
+SECRET_KEY = os.getenv("SJ_API_KEY")
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+STORAGE_NAME = "../vacancies.json"
 
 if __name__ == "__main__":
-    storage = JSONVacancyStorage("../vacancies.json")
+    storage = JSONVacancyStorage(STORAGE_NAME)
     storage.remove_all_vacancies()
     user_interface = UserInterface()
 
@@ -15,23 +19,37 @@ if __name__ == "__main__":
     if platform_choice == "1":
         hh_keyword, hh_cities = user_interface.get_keyword_and_city()
         hh_cities_ids = find_city_ids_hh(TOWNS_IDS_HH, hh_cities)
-        fetch_and_save_hh_vacancies(storage, hh_keyword, hh_cities_ids)
+        api_hh = HeadHunterAPI(USER_AGENT, hh_keyword, hh_cities_ids)
+        api_hh.get_vacancies()
+        parsed_vacancies_hh = api_hh.parse_vacancies()
+        storage.add_vacancies(parsed_vacancies_hh)
 
     elif platform_choice == "2":
         sj_keyword, sj_cities = user_interface.get_keyword_and_city()
         sj_cities_ids = find_city_ids_sj(TOWNS_IDS_SJ, sj_cities)
-        fetch_and_save_sj_vacancies(storage, sj_keyword, sj_cities_ids)
+        api_sj = SuperjobAPI(SECRET_KEY, sj_keyword, sj_cities_ids)
+        api_sj.get_vacancies()
+        parsed_sj_vacancies = api_sj.parse_vacancies()
+        storage.add_vacancies(parsed_sj_vacancies)
 
     elif platform_choice == "3":
         keyword, cities = user_interface.get_keyword_and_city()
         hh_cities_ids = find_city_ids_hh(TOWNS_IDS_HH, cities)
         sj_cities_ids = find_city_ids_sj(TOWNS_IDS_SJ, cities)
-        fetch_and_save_hh_vacancies(storage, keyword, hh_cities_ids)
-        fetch_and_save_sj_vacancies(storage, keyword, sj_cities_ids)
+        api_hh = HeadHunterAPI(USER_AGENT, keyword, hh_cities_ids)
+        api_sj = SuperjobAPI(SECRET_KEY, keyword, sj_cities_ids)
+
+        api_hh.get_vacancies()
+        api_sj.get_vacancies()
+
+        parsed_vacancies_hh = api_hh.parse_vacancies()
+        storage.add_vacancies(parsed_vacancies_hh)
+
+        parsed_sj_vacancies = api_sj.parse_vacancies()
+        storage.add_vacancies(parsed_sj_vacancies)
 
     filtered_words = user_interface.get_filtered_words()
     filtered_vacancies = storage.get_vacancies(filtered_words)
-
 
     if filtered_vacancies:
         n_or_salary_range_choice = user_interface.get_top_n_or_salary_range()
@@ -50,4 +68,4 @@ if __name__ == "__main__":
             for v in salary_range_vacancies:
                 print(v)
     else:
-        print("Помолимся ещё: вакансий по вашему запросу на сегодняшний день не найдено. Ждать вакансий — это испытание, посланное нам Господом нашим!")
+        print("Помолимся ещё: вакансий по вашему запросу на сегодняшний день не найдено.")
