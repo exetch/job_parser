@@ -1,7 +1,8 @@
+from typing import Optional
 class Vacancy:
-    def __init__(self, vacancy_id, title, salary_from, salary_to, currency, vacancy_type, experience, requirements,
-                 responsibility, city, company_name,
-                 url):
+    def __init__(self, vacancy_id: int, title: str, salary_from: Optional[int], salary_to: Optional[int],
+                 currency: str, vacancy_type: str, experience: str, requirements: str, responsibility: str,
+                 city: str, company_name: str, url: str):
         self.vacancy_id = int(vacancy_id)
         self.title = title
         self.salary_from = salary_from
@@ -14,15 +15,19 @@ class Vacancy:
         self.city = city
         self.company_name = company_name
         self.url = url
-
+        self.salary = self._format_salary()
         self.validate_data()
 
-        if self.salary_from or self.salary_to:
-            self.salary = f"от {salary_from}" if salary_from else ""
-            if salary_to:
-                self.salary += f" до {salary_to}"
+    def _format_salary(self) -> str:
+        if self.salary_from is not None or self.salary_to is not None:
+            salary_str = ""
+            if self.salary_from is not None:
+                salary_str += f"от {self.salary_from}"
+            if self.salary_to is not None:
+                salary_str += f" до {self.salary_to}"
+            return salary_str
         else:
-            self.salary = "Не указана"
+            return "Не указана"
 
     def validate_data(self):
         if not isinstance(self.vacancy_id, int):
