@@ -1,11 +1,11 @@
 import os
-from vacancystorage import JSONVacancyStorage
-from userinterface import UserInterface
-from utils import find_city_ids_hh, find_city_ids_sj
-from job_api_clients import SuperjobAPI, HeadHunterAPI
+from src.vacancystorage import JSONVacancyStorage
+from src.userinterface import UserInterface
+from src.utils import find_city_ids_hh, find_city_ids_sj
+from src.job_api_clients import SuperjobAPI, HeadHunterAPI
 
-TOWNS_IDS_HH = "towns_hh.json"
-TOWNS_IDS_SJ = "towns_sj.json"
+TOWNS_IDS_HH = "src/towns_hh.json"
+TOWNS_IDS_SJ = "src/towns_sj.json"
 SECRET_KEY = os.getenv("SJ_API_KEY")
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
 STORAGE_NAME = "../vacancies.json"
@@ -61,7 +61,7 @@ if __name__ == "__main__":
             min_salary, max_salary = n_or_salary_range_choice
             salary_range_vacancies = [
                 v for v in filtered_vacancies if
-                (v.salary_from is None and v.salary_to <= max_salary) or
+                (v.salary_from is None and min_salary <= v.salary_to <= max_salary) or
                 (v.salary_to is None and min_salary <= v.salary_from <= max_salary) or
                 (v.salary_from is not None and v.salary_to is not None and
                  v.salary_from >= min_salary and v.salary_to <= max_salary)]
