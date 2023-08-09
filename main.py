@@ -8,7 +8,7 @@ TOWNS_IDS_HH = "src/towns_hh.json"
 TOWNS_IDS_SJ = "src/towns_sj.json"
 SECRET_KEY = os.getenv("SJ_API_KEY")
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
-STORAGE_NAME = "../vacancies.json"
+STORAGE_NAME = "vacancies.json"
 
 if __name__ == "__main__":
     storage = JSONVacancyStorage(STORAGE_NAME)

@@ -64,9 +64,6 @@ class Vacancy:
             f"Город: {self.city}\nКомпания: {self.company_name}\nURL: {self.url}"
         )
 
-    def __eq__(self, other):
-        return self.salary_from == other.salary_from and self.salary_to == other.salary_to
-
     def __lt__(self, other):
         if self.salary_from is None:
             self_salary_from = 0
@@ -78,20 +75,23 @@ class Vacancy:
         else:
             other_salary_from = other.salary_from
 
-        if self_salary_from == other_salary_from:
+        if self_salary_from != other_salary_from:
+            return self_salary_from < other_salary_from
+        else:
             if self.salary_to is None:
-                self_salary_to = 0
+                self_salary_to = float('inf')
             else:
                 self_salary_to = self.salary_to
 
             if other.salary_to is None:
-                other_salary_to = 0
+                other_salary_to = float('inf')
             else:
                 other_salary_to = other.salary_to
 
-            return self_salary_to > other_salary_to
-        else:
-            return self_salary_from < other_salary_from
+            return self_salary_to < other_salary_to
+
+    def __eq__(self, other):
+        return (self.salary_from, self.salary_to) == (other.salary_from, other.salary_to)
 
     def __le__(self, other):
         return self.__lt__(other) or self.__eq__(other)
