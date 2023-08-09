@@ -60,7 +60,7 @@ class SuperjobAPI(AbstractJobSiteAPI):
                 vacancies = response_data.get('objects', [])
                 total = response_data.get('total', 0)
                 print(
-                    f"Благословенных {total} вакансий обнаружено на superjob.ru. В этой итерации {page + 1}"
+                    f"Благословенных {total} вакансий обнаружено на superjob.ru. В {page + 1} итерации "
                     f"даровано {len(vacancies)} вакансий для вашего рассмотрения...")
                 self.all_vacancies.extend(vacancies)
 
@@ -190,7 +190,7 @@ class HeadHunterAPI(AbstractJobSiteAPI):
                 vacancies = response_data.get('items', [])
                 total = response_data.get('found', 0)
                 print(
-                    f"Веруйте, что на hh.ru найдено {total} благословенных вакансий. Просветление"
+                    f"Веруйте, что на hh.ru найдено {total} благословенных вакансий. Просветление "
                     f"принесло {len(vacancies)} благовествующих вакансий в текущей итерации {page + 1}...")
                 self.all_vacancies.extend(vacancies)
                 if total <= (page + 1) * per_page:
