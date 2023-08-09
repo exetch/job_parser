@@ -13,11 +13,10 @@ STORAGE_NAME = "vacancies.json"
 if __name__ == "__main__":
     storage = JSONVacancyStorage(STORAGE_NAME)
     storage.remove_all_vacancies()
-    user_interface = UserInterface()
 
-    platform_choice = user_interface.get_platform_choice()
+    platform_choice = UserInterface.get_platform_choice()
     if platform_choice == "1":
-        hh_keyword, hh_cities = user_interface.get_keyword_and_city()
+        hh_keyword, hh_cities = UserInterface.get_keyword_and_city()
         hh_cities_ids = find_city_ids_hh(TOWNS_IDS_HH, hh_cities)
         api_hh = HeadHunterAPI(USER_AGENT, hh_keyword, hh_cities_ids)
         api_hh.get_vacancies()
@@ -25,7 +24,7 @@ if __name__ == "__main__":
         storage.add_vacancies(parsed_vacancies_hh)
 
     elif platform_choice == "2":
-        sj_keyword, sj_cities = user_interface.get_keyword_and_city()
+        sj_keyword, sj_cities = UserInterface.get_keyword_and_city()
         sj_cities_ids = find_city_ids_sj(TOWNS_IDS_SJ, sj_cities)
         api_sj = SuperjobAPI(SECRET_KEY, sj_keyword, sj_cities_ids)
         api_sj.get_vacancies()
@@ -33,7 +32,7 @@ if __name__ == "__main__":
         storage.add_vacancies(parsed_sj_vacancies)
 
     elif platform_choice == "3":
-        keyword, cities = user_interface.get_keyword_and_city()
+        keyword, cities = UserInterface.get_keyword_and_city()
         hh_cities_ids = find_city_ids_hh(TOWNS_IDS_HH, cities)
         sj_cities_ids = find_city_ids_sj(TOWNS_IDS_SJ, cities)
         api_hh = HeadHunterAPI(USER_AGENT, keyword, hh_cities_ids)
@@ -48,11 +47,11 @@ if __name__ == "__main__":
         parsed_sj_vacancies = api_sj.parse_vacancies()
         storage.add_vacancies(parsed_sj_vacancies)
 
-    filtered_words = user_interface.get_filtered_words()
+    filtered_words = UserInterface.get_filtered_words()
     filtered_vacancies = storage.get_vacancies(filtered_words)
 
     if filtered_vacancies:
-        n_or_salary_range_choice = user_interface.get_top_n_or_salary_range()
+        n_or_salary_range_choice = UserInterface.get_top_n_or_salary_range()
         if isinstance(n_or_salary_range_choice, int):
             top_n_vacancies = filtered_vacancies[:n_or_salary_range_choice]
             for v in top_n_vacancies:

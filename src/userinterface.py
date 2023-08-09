@@ -1,8 +1,8 @@
 class UserInterface:
-
-    def get_platform_choice(self):
+    @staticmethod
+    def get_platform_choice():
         while True:
-            print("Светило благочестивого труда зовет вас на праведный путь! Сделайте ваш выбор с мудростью и добром в сердце:")
+            print("Светило благочестивого труда зовет! Куда отправим резюме на служение?")
             print("1. Величественный HeadHunter - Избранная платформа праведного труда")
             print("2. Еретический Superjob - Соблазнительный выбор для отступников")
             print("3. Объединить две платформы - Соединить святые силы в труде и поиске")
@@ -13,15 +13,18 @@ class UserInterface:
             else:
                 print("Боже милостивый, прощение просим, но ввод неверный. Избавь нас от заблуждения!")
 
-    def get_keyword_and_city(self):
+    @staticmethod
+    def get_keyword_and_city():
         keyword = input("Милостиво введите ключевое слово для поиска светлых вакансий: ")
         city = input(f"Просим вас указать город или города, чтобы осветить путь к вакансиям (разделите их запятой): ")
         return keyword, city.split(',')
 
-    def get_filtered_words(self):
+    @staticmethod
+    def get_filtered_words():
         return input("Укажите ключевые слова для благочестивой фильтрации вакансий (разделяйте пробелами): ")
 
-    def get_top_n_or_salary_range(self):
+    @staticmethod
+    def get_top_n_or_salary_range():
         while True:
             choice = input(
                 "Великое распутье пред тобою!\nчислом 1 - верховные вакансии в вознаграждении\n"
