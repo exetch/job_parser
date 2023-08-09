@@ -3,6 +3,7 @@ import json
 from typing import List, Dict, Any, Union
 from src.vacancy import Vacancy
 
+
 class VacancyStorage(ABC):
     @abstractmethod
     def add_vacancies(self, vacancies_list):
@@ -15,6 +16,7 @@ class VacancyStorage(ABC):
     @abstractmethod
     def remove_vacancy(self, vacancy_id):
         pass
+
 
 class JSONVacancyStorage(VacancyStorage):
     """
@@ -89,6 +91,7 @@ class JSONVacancyStorage(VacancyStorage):
                 if not any(word.lower() in value.lower() for value in vacancy.values() if isinstance(value, str)):
                     return False
             return True
+
         return sorted([Vacancy(**v) for v in vacancies if check_words_in_vacancy(v)], reverse=True)
 
     def remove_vacancy(self, vacancy_id: Union[int, str]):

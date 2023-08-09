@@ -1,6 +1,7 @@
 import json
 from typing import List
 
+
 def find_city_ids_hh(filename: str, city_names: List[str]) -> List[int]:
     """
     Находит и возвращает идентификаторы городов из файла.

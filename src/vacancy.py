@@ -1,4 +1,6 @@
 from typing import Optional
+
+
 class Vacancy:
     def __init__(self, vacancy_id: int, title: str, salary_from: Optional[int], salary_to: Optional[int],
                  currency: str, vacancy_type: str, experience: str, requirements: str, responsibility: str,
